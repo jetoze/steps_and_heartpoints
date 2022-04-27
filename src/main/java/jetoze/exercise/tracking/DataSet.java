@@ -23,22 +23,30 @@ public class DataSet {
         return dailyStats;
     }
     
-    public Stream<DailyValue> sortedBy(Stat stat, int top) {
+    public TopDaysReport topDays(Stat stat, int top) {
         requireNonNull(stat);
         checkArgument(top > 0, "top must be > 0 (was %s)", top);
+        return new TopDaysReport(stat, sortedBy(stat, top));
+    }
+    
+    private Stream<DailyValue> sortedBy(Stat stat, int top) {
         return dailyStats.stream()
                 .map(ds -> ds.toDailyValue(stat))
                 .sorted(Comparator.reverseOrder())
                 .limit(top);
     }
     
-    public Stream<ConsecutiveDailyValues> topConsecutiveDays(int days, Stat stat, int top) {
+    public TopConsecutiveDaysReport topConsecutiveDays(int days, Stat stat, int top) {
         checkArgument(days > 1, "top must be > 1 (was %s)", days);
         checkArgument(days < dailyStats.size(), "top must be < %s (was %s)", dailyStats.size(), days);
         requireNonNull(stat);
         checkArgument(top > 0, "top must be > 0 (was %s)", top);
+        return new TopConsecutiveDaysReport(stat, sortConsecutiveDays(days, stat, top));
+    }
+    
+    private Stream<ConsecutiveDailyValues> sortConsecutiveDays(int days, Stat stat, int top) {
         List<ConsecutiveDailyValues> list = new ArrayList<>();
-        for (int n = 0; n < dailyStats.size() - days; ++n) {
+        for (int n = 0; n <= dailyStats.size() - days; ++n) {
             List<DailyValue> values = dailyStats.subList(n, n + days).stream()
                     .map(ds -> ds.toDailyValue(stat))
                     .collect(toImmutableList());

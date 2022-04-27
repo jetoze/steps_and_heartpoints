@@ -26,6 +26,10 @@ public final class ConsecutiveDailyValues implements Comparable<ConsecutiveDaily
         this.dailyValues = ImmutableList.copyOf(dailyValues);
     }
     
+    public int numberOfDays() {
+        return dailyValues.size();
+    }
+    
     public Number sum() {
         if (stat == Stat.OURA_DISTANCE) {
             return dailyValues.stream()
@@ -41,6 +45,8 @@ public final class ConsecutiveDailyValues implements Comparable<ConsecutiveDaily
     }
     
     public Number average() {
+        // Interestingly, if we use a ternary operator here the result
+        // always comes out as a double.
         if (stat == Stat.OURA_DISTANCE) {
             return sum().doubleValue() / dailyValues.size();
         } else {
