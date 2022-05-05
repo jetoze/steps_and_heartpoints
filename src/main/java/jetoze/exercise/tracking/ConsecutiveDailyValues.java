@@ -6,6 +6,7 @@ import static java.util.Objects.requireNonNull;
 import java.time.temporal.ChronoUnit;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
 
@@ -26,19 +27,30 @@ public final class ConsecutiveDailyValues implements Comparable<ConsecutiveDaily
         this.dailyValues = ImmutableList.copyOf(dailyValues);
     }
     
+    public LocalDate firstDate() {
+        return dailyValues.get(0).getDate();
+    }
+    
+    public LocalDate lastDate() {
+        return dailyValues.get(dailyValues.size() - 1).getDate();
+    }
+    
     public int numberOfDays() {
         return dailyValues.size();
     }
     
+    public Stream<Number> values() {
+        return dailyValues.stream()
+                .map(DailyValue::getValue);
+    }
+    
     public Number sum() {
         if (stat == Stat.OURA_DISTANCE) {
-            return dailyValues.stream()
-                    .map(DailyValue::getValue)
+            return values()
                     .mapToDouble(Number::doubleValue)
                     .sum();
         } else {
-            return dailyValues.stream()
-                    .map(DailyValue::getValue)
+            return values()
                     .mapToInt(Number::intValue)
                     .sum();
         }
@@ -50,15 +62,16 @@ public final class ConsecutiveDailyValues implements Comparable<ConsecutiveDaily
         if (stat == Stat.OURA_DISTANCE) {
             return sum().doubleValue() / dailyValues.size();
         } else {
-            return sum().intValue() / dailyValues.size();
+            // XXX: This is ugly. Can it be done in a cleaner way?
+            return (int) Math.round(1.0 * sum().intValue() / dailyValues.size());
         }
     }
     
     @Override
     public String toString() {
         return String.format("%s to %s: %s (avg: %s)",
-                dailyValues.get(0).getDate(),
-                dailyValues.get(dailyValues.size() - 1).getDate(),
+                firstDate(),
+                lastDate(),
                 Formats.format(sum()),
                 Formats.format(average()));
     }

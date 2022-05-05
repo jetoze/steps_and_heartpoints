@@ -7,6 +7,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
@@ -44,6 +45,10 @@ public class DataSet {
         return new TopConsecutiveDaysReport(stat, sortConsecutiveDays(days, stat, top));
     }
     
+    public LongestStreakReport longestStreak(Stat stat, Condition condition) {
+        return new LongestStreakReport(condition.getLabel(), stat, calculateLongestStreak(stat, condition));
+    }
+    
     private Stream<ConsecutiveDailyValues> sortConsecutiveDays(int days, Stat stat, int top) {
         List<ConsecutiveDailyValues> list = new ArrayList<>();
         for (int n = 0; n <= dailyStats.size() - days; ++n) {
@@ -55,6 +60,33 @@ public class DataSet {
         return list.stream()
                 .sorted(Comparator.reverseOrder())
                 .limit(top);
+    }
+    
+    private List<ConsecutiveDailyValues> calculateLongestStreak (Stat stat, Predicate<Number> condition) {
+        List<ConsecutiveDailyValues> result = new ArrayList<>();
+        int maxLength = 2;
+        List<DailyValue> current = new ArrayList<>();
+        for (DailyStats d : dailyStats) {
+            if (condition.test(d.get(stat))) {
+                current.add(d.toDailyValue(stat));
+            } else if (!current.isEmpty()) {
+                if (current.size() >= maxLength) {
+                    if (current.size() > maxLength) {
+                        result = new ArrayList<>();
+                        maxLength = current.size();
+                    }
+                    result.add(new ConsecutiveDailyValues(stat, current));
+                }
+                current = new ArrayList<>();
+            }
+        }
+        if (current.size() >= maxLength) {
+            if (current.size() > maxLength) {
+                result = new ArrayList<>();
+            }
+            result.add(new ConsecutiveDailyValues(stat, current));
+        }
+        return result;
     }
 
 }

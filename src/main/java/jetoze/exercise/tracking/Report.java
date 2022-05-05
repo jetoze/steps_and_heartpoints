@@ -22,7 +22,7 @@ public abstract class Report<T> {
         lineConsumer.accept(header);
         lineConsumer.accept("-".repeat(header.length()));
         values.stream()
-            .map(Object::toString)
+            .map(this::valueToString)
             .forEach(lineConsumer);
 
     }
@@ -36,5 +36,9 @@ public abstract class Report<T> {
     }
     
     protected abstract String getHeader();
+    
+    protected String valueToString(T value) {
+        return value.toString();
+    }
     
 }
