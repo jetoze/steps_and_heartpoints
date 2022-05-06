@@ -4,16 +4,17 @@ public class Main {
 
     public static void main(String[] args) {
         DataSet dataSet = Parser.parseResource("Steps & Heartpoints - 2022.tsv");
-        for (Stat stat : Stat.values()) {
-            top(dataSet, stat, 5);
-            System.out.println();
-        }
-        for (Stat stat : Stat.values()) {
-            topConsecutiveDays(dataSet, stat, 5, 5);
-            System.out.println();
-        }
-        longestStreak(dataSet, Stat.OURA_STEPS, Condition.ge(10_000));
-        longestStreak(dataSet, Stat.GFIT_HEARTPOINTS, Condition.ge(50));
+//        for (Stat stat : Stat.values()) {
+//            top(dataSet, stat, 5);
+//            System.out.println();
+//        }
+//        for (Stat stat : Stat.values()) {
+//            topConsecutiveDays(dataSet, stat, 5, 5);
+//            System.out.println();
+//        }
+//        longestStreak(dataSet, Stat.OURA_STEPS, Condition.ge(10_000));
+//        longestStreak(dataSet, Stat.GFIT_HEARTPOINTS, Condition.ge(50));
+        numberOfDays(dataSet, Stat.OURA_STEPS, Condition.ge(18_000));
     }
     
     static void top(DataSet dataSet, Stat stat, int top) {
@@ -28,6 +29,11 @@ public class Main {
     
     static void longestStreak(DataSet dataSet, Stat stat, Condition condition) {
         LongestStreakReport report = dataSet.longestStreak(stat, condition);
+        report.output(System.out::println);
+    }
+    
+    static void numberOfDays(DataSet dataSet, Stat stat, Condition condition) {
+        NumberOfDaysReport report = dataSet.numberOfDays(stat, condition);
         report.output(System.out::println);
     }
     

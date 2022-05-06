@@ -49,6 +49,15 @@ public class DataSet {
         return new LongestStreakReport(condition.getLabel(), stat, calculateLongestStreak(stat, condition));
     }
     
+    public NumberOfDaysReport numberOfDays(Stat stat, Condition condition) {
+        int numberOfDays = (int) dailyStats.stream()
+            .map(ds -> ds.toDailyValue(stat))
+            .map(DailyValue::getValue)
+            .filter(condition)
+            .count();
+        return new NumberOfDaysReport(condition.getLabel(), stat, numberOfDays);
+    }
+    
     private Stream<ConsecutiveDailyValues> sortConsecutiveDays(int days, Stat stat, int top) {
         List<ConsecutiveDailyValues> list = new ArrayList<>();
         for (int n = 0; n <= dailyStats.size() - days; ++n) {
