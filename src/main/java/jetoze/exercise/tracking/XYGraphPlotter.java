@@ -53,6 +53,7 @@ public class XYGraphPlotter {
                 break;
             }
         }
+        System.out.println(" ".repeat(sortedPoints.size() + 5));
     }
     
     
@@ -66,7 +67,7 @@ public class XYGraphPlotter {
             if (sb.length() != p.x) {
                 throw new RuntimeException(String.format("%s plotted at %d", p, sb.length()));
             }
-            sb.append(".");
+            sb.append("o");
             lastX = p.x + 1;
         }
         

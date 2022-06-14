@@ -17,7 +17,7 @@ public class Main {
 //            System.out.println();
 //        }
 //        longestStreak(dataSet, Stat.OURA_STEPS, Condition.ge(10_000));
-//        longestStreak(dataSet, Stat.GFIT_HEARTPOINTS, Condition.ge(50));
+//        longestStreak(dataSet, Stat.GFIT_HEARTPOINTS, Condition.ge(100));
 //        top(dataSet, Stat.OURA_DISTANCE, 10);
 //        numberOfDays(dataSet, Stat.OURA_DISTANCE, Condition.ge(13.0));
 //        longestStreak(dataSet, Stat.OURA_STEPS, Condition.ge(11_000));
@@ -47,7 +47,7 @@ public class Main {
     }
     
     static void averageProgression(DataSet dataSet) {
-        List<DailyValue> dailyValues = dataSet.getDailyValues(Stat.OURA_STEPS);
+        List<DailyValue> dailyValues = dataSet.getDailyValues(Stat.GFIT_STEPS);
         int sum = 0;
         int days = 0;
         for (DailyValue v : dailyValues) {
@@ -62,15 +62,13 @@ public class Main {
     static void plotAverageProgression(DataSet dataSet) {
         List<DailyValue> dailyValues = dataSet.getDailyValues(Stat.OURA_STEPS);
         List<Number> averages = new ArrayList<>();
-        int sum = 0;
+        double sum = 0;
         int days = 0;
         for (DailyValue v : dailyValues) {
-            sum += v.getValue().intValue();
+            sum += v.getValue().doubleValue();
             days++;
-            int average = sum / days;
+            double average = sum / days;
             averages.add(average);
-            //System.out.println(Formats.format(average));
-            //System.out.print(average + " ");
         }
         XYGraphPlotter plotter = new XYGraphPlotter(averages, 300);
         plotter.plot();
