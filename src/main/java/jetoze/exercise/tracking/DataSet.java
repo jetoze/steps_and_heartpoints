@@ -24,6 +24,13 @@ public class DataSet {
         return dailyStats;
     }
     
+    public ImmutableList<DailyValue> getDailyValues(Stat stat) {
+        requireNonNull(stat);
+        return dailyStats.stream()
+                .map(ds -> ds.toDailyValue(stat))
+                .collect(toImmutableList());
+    }
+    
     public TopDaysReport topDays(Stat stat, int top) {
         requireNonNull(stat);
         checkArgument(top > 0, "top must be > 0 (was %s)", top);
