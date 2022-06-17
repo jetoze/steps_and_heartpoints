@@ -1,7 +1,7 @@
 package jetoze.exercise.tracking;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -21,9 +21,9 @@ public class Main {
 //        top(dataSet, Stat.OURA_DISTANCE, 10);
 //        numberOfDays(dataSet, Stat.OURA_DISTANCE, Condition.ge(13.0));
 //        longestStreak(dataSet, Stat.OURA_STEPS, Condition.ge(11_000));
-//        averageProgression(dataSet);
-//        averageProgression(dataSet);
-        plotAverageProgression(dataSet);
+        plotAverageProgression(dataSet, Stat.OURA_STEPS);
+//        printAverageProgression(dataSet, Stat.OURA_STEPS, "\n");
+        
     }
     
     static void top(DataSet dataSet, Stat stat, int top) {
@@ -46,30 +46,19 @@ public class Main {
         report.output(System.out::println);
     }
     
-    static void averageProgression(DataSet dataSet) {
-        List<DailyValue> dailyValues = dataSet.getDailyValues(Stat.GFIT_STEPS);
-        int sum = 0;
-        int days = 0;
-        for (DailyValue v : dailyValues) {
-            sum += v.getValue().intValue();
-            days++;
-            int average = sum / days;
-            //System.out.println(Formats.format(average));
-            System.out.print(average + " ");
-        }
+    static void printAverageProgression(DataSet dataSet, Stat stat, String separator) {
+        String s = dataSet.dailyAverageProgression(stat).stream()
+            .map(DailyValue::getValue)
+            .mapToDouble(Number::doubleValue)
+            .mapToObj(Formats::format)
+            .collect(Collectors.joining(separator));
+        System.out.println(s);
     }
     
-    static void plotAverageProgression(DataSet dataSet) {
-        List<DailyValue> dailyValues = dataSet.getDailyValues(Stat.OURA_STEPS);
-        List<Number> averages = new ArrayList<>();
-        double sum = 0;
-        int days = 0;
-        for (DailyValue v : dailyValues) {
-            sum += v.getValue().doubleValue();
-            days++;
-            double average = sum / days;
-            averages.add(average);
-        }
+    static void plotAverageProgression(DataSet dataSet, Stat stat) {
+        List<Number> averages = dataSet.dailyAverageProgression(stat).stream()
+                .map(DailyValue::getValue)
+                .collect(Collectors.toList());
         XYGraphPlotter plotter = new XYGraphPlotter(averages, 300);
         plotter.plot();
     }

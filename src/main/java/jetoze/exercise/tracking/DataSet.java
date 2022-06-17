@@ -65,6 +65,20 @@ public class DataSet {
         return new NumberOfDaysReport(condition.getLabel(), stat, numberOfDays);
     }
     
+    public List<DailyValue> dailyAverageProgression(Stat stat) {
+        List<DailyValue> averages = new ArrayList<>();
+        double sum = 0;
+        int days = 0;
+        double average = 0.0;
+        for (DailyValue v : getDailyValues(stat)) {
+            sum += v.getValue().doubleValue();
+            days++;
+            average = sum / days;
+            averages.add(new DailyValue(v.getDate(), average));
+        }
+        return averages;
+    }
+    
     private Stream<ConsecutiveDailyValues> sortConsecutiveDays(int days, Stat stat, int top) {
         List<ConsecutiveDailyValues> list = new ArrayList<>();
         for (int n = 0; n <= dailyStats.size() - days; ++n) {
