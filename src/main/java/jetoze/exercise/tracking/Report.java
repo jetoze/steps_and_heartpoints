@@ -3,6 +3,7 @@ package jetoze.exercise.tracking;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import com.google.common.collect.ImmutableList;
@@ -21,9 +22,11 @@ public abstract class Report<T> {
         String header = getHeader();
         lineConsumer.accept(header);
         lineConsumer.accept("-".repeat(header.length()));
+        AtomicInteger place = new AtomicInteger();
+        Consumer<String> wrappingLineConsumer = new TransformingLineConsumer(lineConsumer, s -> place.incrementAndGet() + ") " + s);
         values.stream()
             .map(this::valueToString)
-            .forEach(lineConsumer);
+            .forEach(wrappingLineConsumer);
 
     }
     
@@ -40,5 +43,5 @@ public abstract class Report<T> {
     protected String valueToString(T value) {
         return value.toString();
     }
-    
+        
 }

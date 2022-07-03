@@ -7,6 +7,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -56,6 +57,16 @@ public class DataSet {
         return new LongestStreakReport(condition.getLabel(), stat, calculateLongestStreak(stat, condition));
     }
     
+    public LongestStreakReport longestIncreasingTrend(Stat stat) {
+        return new LongestStreakReport("increasing", stat, longestTrend(stat, 
+                (p, n) -> Double.compare(p.doubleValue(), n.doubleValue()) <= 0.0));
+    }
+    
+    public LongestStreakReport longestDecreasingTrend(Stat stat) {
+        return new LongestStreakReport("decreasing", stat, longestTrend(stat, 
+                (p, n) -> Double.compare(p.doubleValue(), n.doubleValue()) >= 0.0));
+    }
+    
     public NumberOfDaysReport numberOfDays(Stat stat, Condition condition) {
         int numberOfDays = (int) dailyStats.stream()
             .map(ds -> ds.toDailyValue(stat))
@@ -93,11 +104,16 @@ public class DataSet {
     }
     
     private List<ConsecutiveDailyValues> calculateLongestStreak (Stat stat, Predicate<Number> condition) {
+        return longestTrend(stat, (previousValue, newValue) -> condition.test(newValue));
+    }
+    
+    private List<ConsecutiveDailyValues> longestTrend(Stat stat, BiFunction<Number, Number, Boolean> criteria) {
         List<ConsecutiveDailyValues> result = new ArrayList<>();
         int maxLength = 2;
         List<DailyValue> current = new ArrayList<>();
+        Number previousValue = 0;
         for (DailyStats d : dailyStats) {
-            if (condition.test(d.get(stat))) {
+            if (criteria.apply(previousValue, d.get(stat))) {
                 current.add(d.toDailyValue(stat));
             } else if (!current.isEmpty()) {
                 if (current.size() >= maxLength) {
@@ -109,6 +125,7 @@ public class DataSet {
                 }
                 current = new ArrayList<>();
             }
+            previousValue = d.get(stat);
         }
         if (current.size() >= maxLength) {
             if (current.size() > maxLength) {

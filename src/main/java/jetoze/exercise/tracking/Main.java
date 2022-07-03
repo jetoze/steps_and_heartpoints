@@ -16,13 +16,19 @@ public class Main {
 //            topConsecutiveDays(dataSet, stat, 2, 5);
 //            System.out.println();
 //        }
-//        longestStreak(dataSet, Stat.OURA_STEPS, Condition.ge(10_000));
+//        for (Stat stat : Stat.values()) {
+//            longestIncreasingTrend(dataSet, stat);
+//            System.out.println();
+//        }
+//        longestStreak(dataSet, Stat.OURA_BURN, Condition.ge(1000));
 //        longestStreak(dataSet, Stat.GFIT_HEARTPOINTS, Condition.ge(100));
 //        top(dataSet, Stat.OURA_DISTANCE, 10);
-//        numberOfDays(dataSet, Stat.OURA_DISTANCE, Condition.ge(13.0));
+        numberOfDays(dataSet, Stat.GFIT_STEPS, Condition.ge(20_000));
 //        longestStreak(dataSet, Stat.OURA_STEPS, Condition.ge(11_000));
-        plotAverageProgression(dataSet, Stat.OURA_STEPS);
-//        printAverageProgression(dataSet, Stat.OURA_STEPS, "\n");
+//        longestIncreasingTrend(dataSet, Stat.OURA_BURN);
+//        longestDecreasingTrend(dataSet, Stat.OURA_STEPS);
+//        plotAverageProgression(dataSet, Stat.OURA_STEPS);
+//        printAverageProgression(dataSet, Stat.GFIT_HEARTPOINTS, " ");
         
     }
     
@@ -43,6 +49,16 @@ public class Main {
     
     static void numberOfDays(DataSet dataSet, Stat stat, Condition condition) {
         NumberOfDaysReport report = dataSet.numberOfDays(stat, condition);
+        report.output(System.out::println);
+    }
+    
+    static void longestIncreasingTrend(DataSet dataSet, Stat stat) {
+        LongestStreakReport report = dataSet.longestIncreasingTrend(stat);
+        report.output(System.out::println);
+    }
+    
+    static void longestDecreasingTrend(DataSet dataSet, Stat stat) {
+        LongestStreakReport report = dataSet.longestDecreasingTrend(stat);
         report.output(System.out::println);
     }
     
